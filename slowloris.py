@@ -4,7 +4,7 @@ from socket import socket, AF_INET, SOCK_STREAM, error
 from random import randint
 from time import sleep
 from sys import argv
-from progress import counter
+from progress.counter import Counter, Countdown
 from ANSI import *
 
 version = ' 0.1'
@@ -32,9 +32,10 @@ def main():
   ip = argv[1]
   port = argv[2]
   socket_count = int(argv[3])
-  bar = counter.Counter(GREENC+'Creating Sockets: '+YELLOWC, max=socket_count)
-  timer = int(argv[4])
   socket_list = []
+  bar = Counter(GREENC+'Creating Sockets: '+YELLOWC, max=socket_count)
+  timer = int(argv[4])
+
   for _ in range(socket_count):
     try:
       s=init(ip, port)
@@ -51,13 +52,14 @@ def main():
       except error:
         socket_list.remove(s)
     for _ in range(socket_count - len(socket_list)):
-      print(PURPLEC+"Re-creating Socket...")
+      rebar = Countdown(PURPLEC+"\nRe-creating Socket: "+REDC, max=socket_count - len(socket_list))
       try:
         s=init(ip, port)
         if s:
           socket_list.append(s)
       except error:
         break
+      rebar.next()
     sleep(timer)
 if __name__=='__main__':
   main()
